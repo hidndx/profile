@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatGPT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+        }
+        #chat-window {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 400px;
+            overflow-y: scroll;
+        }
+        #input-container {
+            margin-top: 10px;
+        }
+        #input-container input {
+            width: 100%;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ChatGPT</h1>
+
+    <div id="chat-window"></div>
+
+    <div id="input-container">
+        <input type="text" id="input" placeholder="Type your message here...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@openai/api"></script>
+    <script>
+        const openai = new OpenAI("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");
+
+        async function sendMessage() {
+            var input = document.getElementById("input").value.trim();
+            var chatWindow = document.getElementById("chat-window");
+
+            // Tampilkan input pengguna di chat window
+            chatWindow.innerHTML += "<p>You: " + input + "</p>";
+
+            // Mengirim pesan ke ChatGPT dan menampilkan respon di chat window
+            try {
+                const response = await openai.complete({
+                    engine: 'text-davinci-002',
+                    prompt: input + "\nAI:",
+                    maxTokens: 150,
+                    n: 1,
+                    stop: ["\n"],
+                    temperature: 0.5
+                });
+
+                var output = response.choices[0].text.trim();
+                chatWindow.innerHTML += "<p>AI: " + output + "</p>";
+            } catch (err) {
+                console.error(err);
+                chatWindow.innerHTML += "<p>AI: Sorry, an error occurred while processing your request.</p>";
+            }
+
+            // Kosongkan area input
+            document.getElementById("input").value = "";
+
+            // Scroll chat window ke bawah
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+    </script>
+</body>
+</html>
